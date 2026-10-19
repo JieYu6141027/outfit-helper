@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f4ee">
+  <meta name="description" content="選好溫度、天氣和出門場合，快速取得一張舒服好活動的今日穿搭小卡。">
+  <title>今天穿什麼？｜今日穿搭小卡</title>
+  <style>
+    :root {
+      --paper: #fbf8f2;
+      --card: #fffefa;
+      --ink: #303b3a;
+      --muted: #78817c;
+      --line: #e6e3da;
+      --green: #607d72;
+      --green-dark: #466356;
+      --green-pale: #e8efe9;
+      --peach: #f4e5d9;
+      --peach-dark: #b77857;
+      --lavender: #eeeaf2;
+      --shadow: 0 18px 55px rgba(61, 71, 65, .08);
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 8% 6%, rgba(233, 222, 205, .42), transparent 34rem),
+        radial-gradient(ellipse at 96% 38%, rgba(219, 231, 223, .58), transparent 28rem),
+        var(--paper);
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.6;
+    }
+
+    button { font: inherit; }
+
+    .page-shell {
+      width: min(100% - 32px, 1000px);
+      margin: 0 auto;
+      padding: 30px 0 54px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--green-dark);
+      font-size: .88rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--green-pale);
+      font-size: 1.05rem;
+    }
+
+    .today-label {
+      color: var(--muted);
+      font-size: .8rem;
+      letter-spacing: .07em;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 170px;
+      align-items: center;
+      gap: 20px;
+      min-height: 190px;
+      padding: 30px 38px;
+      border: 1px solid rgba(230, 227, 218, .9);
+      border-radius: 28px;
+      background: linear-gradient(115deg, #fffefa 0%, #f8eee5 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy { position: relative; z-index: 1; }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--peach-dark);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      line-height: 1.15;
+      letter-spacing: -.045em;
+    }
+
+    .hero-copy > p:last-child {
+      max-width: 530px;
+      margin: 13px 0 0;
+      color: #68736c;
+      font-size: .98rem;
+    }
+
+    .hero-art {
+      position: relative;
+      display: grid;
+      width: 142px;
+      height: 142px;
+      place-items: center;
+      justify-self: center;
+      border: 1px solid rgba(96, 125, 114, .12);
+      border-radius: 48% 52% 44% 56% / 54% 42% 58% 46%;
+      background: rgba(255, 255, 255, .58);
+      transform: rotate(4deg);
+    }
+
+    .hero-art::before,
+    .hero-art::after {
+      position: absolute;
+      content: "";
+      border: 1px solid rgba(183, 120, 87, .22);
+      border-radius: 50%;
+    }
+
+    .hero-art::before { inset: 12px -8px 10px 12px; transform: rotate(-23deg); }
+    .hero-art::after { inset: -8px 15px 16px -7px; transform: rotate(28deg); }
+
+    .hero-emoji { font-size: 4.35rem; transform: rotate(-4deg); }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(310px, .96fr);
+      align-items: start;
+      gap: 23px;
+      margin-top: 24px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 254, 250, .94);
+      box-shadow: 0 10px 35px rgba(61, 71, 65, .045);
+    }
+
+    .form-panel { padding: 25px; }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: -.02em;
+    }
+
+    .panel-heading p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .step-badge {
+      display: inline-grid;
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--green-pale);
+      color: var(--green-dark);
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    fieldset + fieldset { margin-top: 23px; }
+
+    legend {
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: .93rem;
+      font-weight: 800;
+    }
+
+    .legend-hint {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .77rem;
+      font-weight: 400;
+    }
+
+    .option-grid { display: grid; gap: 8px; }
+    .temperature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .weather-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .occasion-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .choice {
+      min-height: 45px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: #59645e;
+      background: #fff;
+      cursor: pointer;
+      font-size: .82rem;
+      font-weight: 650;
+      line-height: 1.35;
+      transition: border-color .16s ease, background .16s ease, color .16s ease, transform .16s ease;
+    }
+
+    .choice:hover {
+      border-color: #9aafa2;
+      color: var(--green-dark);
+      transform: translateY(-1px);
+    }
+
+    .choice[aria-pressed="true"] {
+      border-color: var(--green);
+      color: var(--green-dark);
+      background: var(--green-pale);
+      box-shadow: inset 0 0 0 1px rgba(96, 125, 114, .08);
+    }
+
+    .choice:focus-visible,
+    .primary-button:focus-visible,
+    .secondary-button:focus-visible {
+      outline: 3px solid rgba(183, 120, 87, .38);
+      outline-offset: 3px;
+    }
+
+    .weather-choice { min-height: 51px; }
+    .weather-choice .emoji { display: block; margin-bottom: 2px; font-size: 1.05rem; }
+    .occasion-choice { min-height: 42px; padding-inline: 5px; }
+
+    .error-message {
+      min-height: 1.35em;
+      margin: 13px 0 0;
+      color: #a34f43;
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .primary-button,
+    .secondary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 49px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .primary-button {
+      width: 100%;
+      border: 0;
+      color: #fffefa;
+      background: var(--green);
+      box-shadow: 0 8px 18px rgba(70, 99, 86, .17);
+    }
+
+    .primary-button:hover {
+      background: var(--green-dark);
+      box-shadow: 0 10px 22px rgba(70, 99, 86, .22);
+      transform: translateY(-1px);
+    }
+
+    .form-footnote {
+      margin: 13px 0 0;
+      color: var(--muted);
+      font-size: .76rem;
+      text-align: center;
+    }
+
+    .result-panel {
+      position: sticky;
+      top: 18px;
+      min-height: 477px;
+      padding: 25px;
+      background: linear-gradient(155deg, #fffefa 0%, #f5f1e9 100%);
+    }
+
+    .result-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 19px;
+    }
+
+    .result-heading h2 { margin: 0; font-size: 1.18rem; }
+    .result-heading p { margin: 4px 0 0; color: var(--muted); font-size: .82rem; }
+
+    .sparkle {
+      display: grid;
+      width: 35px;
+      height: 35px;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--peach);
+      font-size: 1rem;
+    }
+
+    .empty-state {
+      display: grid;
+      min-height: 340px;
+      place-content: center;
+      padding: 20px;
+      border: 1px dashed #d8d5cb;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .45);
+      text-align: center;
+    }
+
+    .empty-emoji { margin-bottom: 12px; font-size: 2.7rem; }
+    .empty-state strong { display: block; font-size: 1rem; }
+    .empty-state p { max-width: 245px; margin: 7px auto 0; color: var(--muted); font-size: .84rem; }
+
+    .result-content[hidden], .empty-state[hidden], .secondary-button[hidden] { display: none; }
+
+    .look-card {
+      overflow: hidden;
+      border: 1px solid rgba(230, 227, 218, .95);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: 0 12px 28px rgba(61, 71, 65, .06);
+      animation: pop-in .25s ease-out;
+    }
+
+    @keyframes pop-in {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .look-card-top {
+      position: relative;
+      padding: 17px 19px 15px;
+      background: linear-gradient(110deg, #e9f0ea, #f6e8dd);
+    }
+
+    .look-kicker {
+      margin: 0 0 5px;
+      color: #62766c;
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .look-title { margin: 0; font-size: 1.12rem; }
+
+    .condition-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      padding: 3px 9px;
+      border: 1px solid rgba(96, 125, 114, .15);
+      border-radius: 999px;
+      color: #586960;
+      background: rgba(255, 255, 255, .57);
+      font-size: .72rem;
+      font-weight: 700;
+    }
+
+    .look-items { display: grid; gap: 0; padding: 4px 19px; }
+
+    .look-item {
+      display: grid;
+      grid-template-columns: 98px minmax(0, 1fr);
+      align-items: baseline;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #efede7;
+    }
+
+    .look-item:last-child { border-bottom: 0; }
+    .look-label { color: var(--muted); font-size: .8rem; }
+    .look-value { color: var(--ink); font-size: .88rem; font-weight: 750; }
+
+    .look-reason {
+      margin: 0 19px 17px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      color: #627168;
+      background: #f3f5f1;
+      font-size: .8rem;
+    }
+
+    .result-actions { margin-top: 14px; }
+
+    .secondary-button {
+      width: 100%;
+      border: 1px solid #cbd7ce;
+      color: var(--green-dark);
+      background: #f4f7f3;
+    }
+
+    .secondary-button:hover { background: var(--green-pale); transform: translateY(-1px); }
+
+    .bottom-note {
+      margin: 23px 4px 0;
+      color: #818780;
+      font-size: .78rem;
+      text-align: center;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 25px;
+      color: #879087;
+      font-size: .72rem;
+    }
+
+    @media (max-width: 760px) {
+      .page-shell { width: min(100% - 24px, 560px); padding-top: 20px; }
+      .hero { grid-template-columns: minmax(0, 1fr) 95px; min-height: 158px; padding: 23px 21px; border-radius: 23px; }
+      .hero-art { width: 83px; height: 83px; }
+      .hero-emoji { font-size: 2.75rem; }
+      .hero-copy > p:last-child { font-size: .87rem; }
+      .content-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
+      .form-panel, .result-panel { padding: 20px; }
+      .result-panel { position: static; min-height: auto; }
+      .empty-state { min-height: 230px; }
+      .occasion-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 390px) {
+      .page-shell { width: min(100% - 18px, 560px); }
+      .hero { grid-template-columns: minmax(0, 1fr) 65px; padding: 19px 16px; }
+      .hero-art { width: 62px; height: 62px; }
+      .hero-emoji { font-size: 2.2rem; }
+      .form-panel, .result-panel { padding: 17px; }
+      .choice { padding-inline: 6px; font-size: .76rem; }
+      .look-item { grid-template-columns: 83px minmax(0, 1fr); gap: 8px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <div class="topline">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✿</span><span>DAILY LOOK</span></div>
+      <span class="today-label">穿得舒服，出門自在</span>
+    </div>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">YOUR LITTLE OUTFIT HELPER</p>
+        <h1>今天穿什麼？</h1>
+        <p>選好天氣和行程，幫自己配一套舒服、方便活動的穿搭。</p>
+      </div>
+      <div class="hero-art" aria-hidden="true"><span class="hero-emoji">👚</span></div>
+    </header>
+
+    <div class="content-grid">
+      <section class="panel form-panel" aria-labelledby="form-title">
+        <div class="panel-heading">
+          <div>
+            <h2 id="form-title">先告訴我今天的安排</h2>
+            <p>三個選擇，就能開始搭配</p>
+          </div>
+          <span class="step-badge" aria-hidden="true">01</span>
+        </div>
+
+        <fieldset data-group="temperature">
+          <legend>大約幾度？<span class="legend-hint">選擇你出門時感受到的溫度</span></legend>
+          <div class="option-grid temperature-grid">
+            <button class="choice" type="button" data-value="hot" aria-pressed="false">30°C 以上</button>
+            <button class="choice" type="button" data-value="warm" aria-pressed="false">25–29°C</button>
+            <button class="choice" type="button" data-value="mild" aria-pressed="false">20–24°C</button>
+            <button class="choice" type="button" data-value="cool" aria-pressed="false">19°C 以下</button>
+          </div>
+        </fieldset>
+
+        <fieldset data-group="weather">
+          <legend>天氣如何？</legend>
+          <div class="option-grid weather-grid">
+            <button class="choice weather-choice" type="button" data-value="sunny" aria-pressed="false"><span class="emoji" aria-hidden="true">☀️</span>晴天</button>
+            <button class="choice weather-choice" type="button" data-value="cloudy" aria-pressed="false"><span class="emoji" aria-hidden="true">☁️</span>多雲／陰天</button>
+            <button class="choice weather-choice" type="button" data-value="rainy" aria-pressed="false"><span class="emoji" aria-hidden="true">🌧️</span>下雨</button>
+          </div>
+        </fieldset>
+
+        <fieldset data-group="occasion">
+          <legend>今天要去哪裡？</legend>
+          <div class="option-grid occasion-grid">
+            <button class="choice occasion-choice" type="button" data-value="daily" aria-pressed="false">日常外出</button>
+            <button class="choice occasion-choice" type="button" data-value="class" aria-pressed="false">上課</button>
+            <button class="choice occasion-choice" type="button" data-value="work" aria-pressed="false">上班</button>
+            <button class="choice occasion-choice" type="button" data-value="date" aria-pressed="false">約會</button>
+            <button class="choice occasion-choice" type="button" data-value="exercise" aria-pressed="false">運動</button>
+            <button class="choice occasion-choice" type="button" data-value="travel" aria-pressed="false">旅行</button>
+            <button class="choice occasion-choice" type="button" data-value="concert" aria-pressed="false">看演唱會</button>
+            <button class="choice occasion-choice" type="button" data-value="market" aria-pressed="false">市集</button>
+          </div>
+        </fieldset>
+
+        <p class="error-message" id="form-error" aria-live="polite"></p>
+        <button class="primary-button" id="generate-button" type="button"><span aria-hidden="true">✦</span> 幫我搭配</button>
+        <p class="form-footnote">依你選擇的條件提供穿搭靈感，不會儲存個人資料。</p>
+      </section>
+
+      <section class="panel result-panel" aria-labelledby="result-heading">
+        <div class="result-heading">
+          <div>
+            <h2 id="result-heading">你的今日穿搭</h2>
+            <p>一張小卡，帶著輕鬆出門</p>
+          </div>
+          <span class="sparkle" aria-hidden="true">✦</span>
+        </div>
+
+        <div class="empty-state" id="empty-state">
+          <div>
+            <div class="empty-emoji" aria-hidden="true">🧺</div>
+            <strong>穿搭小卡在這裡等你</strong>
+            <p>選好溫度、天氣和場合，再按「幫我搭配」看看今天的建議。</p>
+          </div>
+        </div>
+
+        <div class="result-content" id="result-content" hidden aria-live="polite">
+          <article class="look-card" id="look-card">
+            <div class="look-card-top">
+              <p class="look-kicker">TODAY'S LITTLE LOOK</p>
+              <h3 class="look-title" id="look-title">舒服自在的一天</h3>
+              <div class="condition-pills" id="condition-pills"></div>
+            </div>
+            <div class="look-items">
+              <div class="look-item"><span class="look-label">上衣／連身款</span><span class="look-value" id="look-top"></span></div>
+              <div class="look-item"><span class="look-label">下身搭配</span><span class="look-value" id="look-bottom"></span></div>
+              <div class="look-item"><span class="look-label">外套</span><span class="look-value" id="look-outer"></span></div>
+              <div class="look-item"><span class="look-label">配件</span><span class="look-value" id="look-accessory"></span></div>
+              <div class="look-item"><span class="look-label">小提醒</span><span class="look-value" id="look-tip"></span></div>
+            </div>
+            <p class="look-reason" id="look-reason"></p>
+          </article>
+          <div class="result-actions">
+            <button class="secondary-button" id="again-button" type="button"><span aria-hidden="true">↻</span> 再給我一套</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <p class="bottom-note">穿搭是靈感提案，依個人感受、活動和實際天氣調整就好。</p>
+    <footer class="footer"><span>MADE FOR A COMFY DAY</span><span aria-hidden="true">·</span><span>慢慢選，舒服就好</span></footer>
+  </main>
+
+  <script>
+    (() => {
+      const selected = { temperature: null, weather: null, occasion: null };
+      const temperatureLabels = { hot: "30°C 以上", warm: "25–29°C", mild: "20–24°C", cool: "19°C 以下" };
+      const weatherLabels = { sunny: "晴天", cloudy: "多雲／陰天", rainy: "下雨" };
+      const occasionLabels = {
+        daily: "日常外出", class: "上課", work: "上班", date: "約會",
+        exercise: "運動", travel: "旅行", concert: "看演唱會", market: "市集"
+      };
+
+      const groups = document.querySelectorAll("fieldset[data-group]");
+      const error = document.getElementById("form-error");
+      const resultContent = document.getElementById("result-content");
+      const emptyState = document.getElementById("empty-state");
+      const variantsByCombination = Object.create(null);
+
+      groups.forEach((group) => {
+        const groupName = group.dataset.group;
+        group.addEventListener("click", (event) => {
+          const button = event.target.closest("button[data-value]");
+          if (!button) return;
+          group.querySelectorAll(".choice").forEach((choice) => choice.setAttribute("aria-pressed", "false"));
+          button.setAttribute("aria-pressed", "true");
+          selected[groupName] = button.dataset.value;
+          error.textContent = "";
+        });
+      });
+
+      function pick(items, variant, offset = 0) {
+        return items[(variant + offset) % items.length];
+      }
+
+      function chooseLook(temperature, occasion, variant) {
+        const isActive = occasion === "exercise";
+        const isNeat = occasion === "work";
+        const isDressy = occasion === "date";
+        const isMobile = ["travel", "concert", "market"].includes(occasion);
+
+        const topsByTemperature = {
+          hot: ["短袖"],
+          warm: isNeat ? ["短袖", "長袖"] : ["短袖", "長袖"],
+          mild: ["長袖", "毛衣"],
+          cool: ["毛衣", "長袖"]
+        };
+        let tops = [...topsByTemperature[temperature]];
+
+        const bottomsByTemperature = {
+          hot: ["短褲", "裙子", "洋裝"],
+          warm: ["長褲", "裙子", "洋裝"],
+          mild: ["長褲", "裙子", "洋裝"],
+          cool: ["長褲", "裙子"]
+        };
+        let bottoms = [...bottomsByTemperature[temperature]];
+
+        if (isActive) {
+          bottoms = temperature === "hot" || temperature === "warm" ? ["短褲", "長褲"] : ["長褲"];
+        } else if (isNeat) {
+          bottoms = temperature === "hot" ? ["長褲", "裙子", "洋裝"] : ["長褲", "裙子", "洋裝"];
+        } else if (isDressy && temperature !== "cool") {
+          bottoms = temperature === "hot" ? ["裙子", "洋裝"] : ["長褲", "裙子", "洋裝"];
+        } else if (isMobile && temperature !== "hot") {
+          bottoms = temperature === "cool" ? ["長褲", "裙子"] : ["長褲", "裙子", "洋裝"];
+        }
+
+        let top = pick(tops, variant);
+        let bottom = pick(bottoms, variant, 1);
+        if (bottom === "洋裝") {
+          top = "洋裝（連身款）";
+          bottom = "洋裝本身，不需另外搭配下身";
+        }
+
+        const outerByTemperature = {
+          hot: ["通常不需要；冷氣房可帶薄外套"],
+          warm: ["薄外套，進冷氣房時可穿", "視活動地點決定是否加薄外套"],
+          mild: ["薄外套", "針織外套"],
+          cool: ["外套", "保暖外套"]
+        };
+        const outer = pick(outerByTemperature[temperature], variant, 2);
+
+        let accessory;
+        if (selected.weather === "sunny") {
+          accessory = pick(["帽子", "陽傘", "帽子或陽傘皆可"], variant, 1);
+        } else if (selected.weather === "rainy") {
+          accessory = "準備雨具；陽傘主要用於防曬";
+        } else {
+          accessory = isMobile ? "輕便小包，方便走動" : "簡單配件即可，保持輕鬆";
+        }
+
+        const tips = {
+          hot: "天氣偏熱，選輕薄透氣的衣物；記得補充水分。",
+          warm: "日夜或室內外可能有溫差，薄外套方便穿脫。",
+          mild: "以長袖或薄外套做層次，活動時比較好調整。",
+          cool: "留意保暖；長時間在戶外可以多加一層。"
+        };
+        let tip = tips[temperature];
+        if (selected.weather === "rainy") tip = "下雨記得準備雨具；出門前再確認降雨情況。";
+        if (selected.weather === "sunny" && temperature !== "cool") tip = "戶外日曬較明顯，帽子或陽傘可以擇一使用。";
+
+        const reasons = {
+          daily: "日常外出以舒服、好活動為主，按溫度調整衣物厚薄。",
+          class: "上課場合適合方便活動、在室內外都好調整的搭配。",
+          work: "上班穿搭以舒服俐落為主，外套可依冷氣和通勤狀況調整。",
+          date: "約會穿搭保留自在感，再用裙子或洋裝增添變化。",
+          exercise: "運動時優先選方便伸展、活動的上衣和下身。",
+          travel: "旅行時以舒適和方便穿脫為主，適合安排衣物層次。",
+          concert: "看演唱會可能需要久站或活動，搭配以輕鬆為主。",
+          market: "逛市集常會在戶外走動，透氣和方便活動會更自在。"
+        };
+
+        return { top, bottom, outer, accessory, tip, reason: reasons[occasion] };
+      }
+
+      function renderLook(look) {
+        document.getElementById("look-title").textContent = `${occasionLabels[selected.occasion]}・舒服自在的一套`;
+        document.getElementById("look-top").textContent = look.top;
+        document.getElementById("look-bottom").textContent = look.bottom;
+        document.getElementById("look-outer").textContent = look.outer;
+        document.getElementById("look-accessory").textContent = look.accessory;
+        document.getElementById("look-tip").textContent = look.tip;
+        document.getElementById("look-reason").textContent = look.reason;
+
+        const pills = document.getElementById("condition-pills");
+        pills.replaceChildren();
+        [temperatureLabels[selected.temperature], weatherLabels[selected.weather], occasionLabels[selected.occasion]].forEach((label) => {
+          const pill = document.createElement("span");
+          pill.className = "pill";
+          pill.textContent = label;
+          pills.appendChild(pill);
+        });
+
+        emptyState.hidden = true;
+        resultContent.hidden = false;
+        document.getElementById("again-button").hidden = false;
+        document.getElementById("look-card").style.animation = "none";
+        requestAnimationFrame(() => { document.getElementById("look-card").style.animation = ""; });
+      }
+
+      function generate() {
+        const missing = Object.entries(selected).filter(([, value]) => !value).map(([key]) => key);
+        if (missing.length) {
+          const labels = { temperature: "溫度", weather: "天氣", occasion: "場合" };
+          error.textContent = `還差${missing.map((key) => labels[key]).join("、")}，選好後就能搭配。`;
+          document.querySelector(`[data-group="${missing[0]}"]`).scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+        error.textContent = "";
+        const key = `${selected.temperature}|${selected.weather}|${selected.occasion}`;
+        const variant = Object.prototype.hasOwnProperty.call(variantsByCombination, key)
+          ? variantsByCombination[key] + 1
+          : Math.floor(Math.random() * 96);
+        variantsByCombination[key] = variant;
+        const look = chooseLook(selected.temperature, selected.occasion, variant);
+        renderLook(look);
+        if (window.matchMedia("(max-width: 760px)").matches) {
+          document.getElementById("result-heading").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      document.getElementById("generate-button").addEventListener("click", generate);
+      document.getElementById("again-button").addEventListener("click", generate);
+    })();
+  </script>
+</body>
+</html>
